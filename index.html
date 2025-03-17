@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrera de Autobuses - TikTok Live</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #87CEEB, #E0F6FF);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            transition: background 0.5s ease;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .game-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px 0;
+            border-radius: 0;
+            box-shadow: none;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+            position: relative;
+            transition: background 0.5s ease;
+        }
+
+        h1 { 
+            color: #FF4500;
+            font-size: 32px; 
+            margin: 10px 0; 
+            transition: color 0.5s ease; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        h3 { 
+            color: #FFD700;
+            font-size: 20px; 
+            margin: 5px 0; 
+            transition: color 0.5s ease; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); 
+        }
+
+        p { 
+            margin: 5px 0; 
+            color: #32CD32;
+            transition: color 0.5s ease; 
+            font-weight: bold;
+        }
+
+        .track {
+            margin: 0;
+            background: rgba(51, 51, 51, 0.8);
+            padding: 20px 0;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background 0.5s ease;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .goal-container {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .goal-container span {
+            margin-right: 5px;
+        }
+
+        .goal-container .flag {
+            font-size: 20px;
+        }
+
+        .lane {
+            display: flex;
+            align-items: center;
+            height: 100px;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .lane:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .lane::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -10%;
+            width: 120%;
+            height: 2px;
+            background: repeating-linear-gradient(to right, white 0, white 10px, transparent 10px, transparent 30px);
+            background-size: 40px 100%;
+            animation: moveLines 1s linear infinite;
+        }
+
+        @keyframes moveLines {
+            0% { background-position: 40px 0; }
+            100% { background-position: 0 0; }
+        }
+
+        .bus-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            overflow: visible;
+        }
+
+        .bus {
+            position: absolute;
+            left: 0;
+            width: 80px;
+            height: auto;
+            transition: left 0.5s ease;
+            z-index: 2;
+            bottom: 0px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .bus-name {
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            z-index: 3;
+            transition: left 0.5s ease;
+            white-space: nowrap;
+        }
+
+        .star-container {
+            position: absolute;
+            left: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+            transition: left 0.5s ease;
+        }
+
+        .star {
+            background: none;
+            border: none;
+            color: #FFD700;
+            object-fit: contain;
+            animation: sway 2s infinite ease-in-out;
+        }
+
+        @keyframes sway {
+            0% { transform: rotate(-15deg); }
+            50% { transform: rotate(15deg); }
+            100% { transform: rotate(-15deg); }
+        }
+
+        .gift-count {
+            font-size: 18px;
+            color: #fff;
+            margin-top: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            transition: color 0.5s ease;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .footer { padding: 10px 0; position: relative; }
+        #timer { font-weight: bold; font-size: 20px; }
+        #error { color: #FF1493; transition: color 0.5s ease; }
+
+        .settings-icon {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            color: #333;
+            z-index: 10;
+            transition: color 0.5s ease;
+        }
+
+        .settings-icon:hover { color: #555; }
+
+        .refresh-interface {
+            position: absolute;
+            top: 5px;
+            right: 35px;
+            font-size: 18px;
+            cursor: pointer;
+            color: #333;
+            z-index: 10;
+            transition: color 0.5s ease;
+        }
+
+        .refresh-interface:hover { color: #555; }
+
+        .dark-mode-toggle {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            color: #333;
+            z-index: 10;
+            transition: color 0.5s ease;
+        }
+
+        .dark-mode-toggle:hover { color: #555; }
+
+        .settings-menu {
+            display: none;
+            position: absolute;
+            top: 25px;
+            right: 10px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            z-index: 11;
+            color: #fff;
+            width: 250px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .settings-menu button {
+            display: block;
+            width: 100%;
+            padding: 5px;
+            margin: 5px 0;
+            background: #333;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            color: #ddd;
+        }
+
+        .settings-menu button:hover { background: #555; color: #fff; }
+
+        .settings-menu label {
+            display: block;
+            margin: 5px 0;
+            color: #ddd;
+        }
+
+        .settings-menu input[type="range"] {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        .dark-mode body { background: linear-gradient(to bottom, #1a1a1a, #333); }
+        .dark-mode .game-container { background: rgba(0, 0, 0, 0.8); }
+        .dark-mode h1 { color: #FF6347; }
+        .dark-mode h3 { color: #FFFF99; }
+        .dark-mode p { color: #98FB98; }
+        .dark-mode .settings-icon, .dark-mode .dark-mode-toggle, .dark-mode .refresh-interface { color: #ddd; }
+        .dark-mode #error { color: #FF69B4; }
+        .dark-mode .track { background: rgba(26, 26, 26, 0.8); }
+        .dark-mode .gift-count { color: #fff; }
+        #dynamicLineSpeed { display: none; }
+
+        #styleForm, #starDistanceForm, #goalForm, #busForm, #starForm, #lastWinnerForm {
+            margin-top: 10px;
+            display: none;
+        }
+
+        #styleForm label, #starDistanceForm label, #goalForm label, #busForm label, #starForm label, #lastWinnerForm label {
+            display: block;
+            margin: 5px 0;
+            color: #ddd;
+        }
+
+        #styleForm input, #starDistanceForm input, #goalForm input, #busForm input, #starForm input, #lastWinnerForm input {
+            width: calc(100% - 10px);
+            height: 30px;
+            padding: 5px;
+            border: none;
+            background: #333;
+            color: #ddd;
+            cursor: pointer;
+        }
+
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .refresh-icon {
+            font-size: 16px;
+            cursor: pointer;
+            color: #ddd;
+            margin-right: 5px;
+        }
+
+        .refresh-icon:hover {
+            color: #fff;
+        }
+
+        #styleForm button, #starDistanceForm button, #goalForm button, #busForm button, #starForm button, #lastWinnerForm button {
+            background: #555;
+            color: #fff;
+            margin-top: 10px;
+            width: 100%;
+            padding: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #styleForm button:hover, #starDistanceForm button:hover, #goalForm button:hover, #busForm button:hover, #starForm button:hover, #lastWinnerForm button:hover {
+            background: #777;
+        }
+
+        .winner-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #FFD700;
+            font-size: 36px;
+            font-weight: bold;
+            padding: 20px 40px;
+            border-radius: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: none;
+            animation: winnerAnimation 3s ease-in-out;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+
+        @keyframes winnerAnimation {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+            80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+
+        .dark-mode .winner-message {
+            background: rgba(255, 255, 255, 0.9);
+            color: #FF4500;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+        }
+
+        #backgroundVideo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        #trackVideo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+    </style>
+    <style id="dynamicLineSpeed"></style>
+    <style id="dynamicBusStyle"></style>
+    <style id="dynamicStarStyle">
+        .star { font-size: 28px; width: 28px; height: 28px; }
+    </style>
+</head>
+<body>
+    <video id="backgroundVideo" autoplay loop muted style="display: none;"></video>
+    <div class="game-container">
+        <span class="dark-mode-toggle" id="darkModeToggle" onclick="toggleDarkMode()">🌙</span>
+        <span class="refresh-interface" id="refreshInterface" onclick="refreshInterface()">🔄</span>
+        <span class="settings-icon" id="settingsIcon" onclick="toggleSettings()">⚙️</span>
+        <div class="settings-menu" id="settingsMenu">
+            <button onclick="document.getElementById('bodyImageInput').click()">Fondo Interfaz (Imagen)</button>
+            <input type="file" id="bodyImageInput" accept="image/*" style="display: none;" onchange="changeBodyImage(event)">
+            <button onclick="document.getElementById('bodyVideoInput').click()">Fondo Interfaz (Video)</button>
+            <input type="file" id="bodyVideoInput" accept="video/*" style="display: none;" onchange="changeBodyVideo(event)">
+            <button onclick="document.getElementById('trackImageInput').click()">Fondo Panel Buses (Imagen)</button>
+            <input type="file" id="trackImageInput" accept="image/*" style="display: none;" onchange="changeTrackImage(event)">
+            <button onclick="document.getElementById('trackVideoInput').click()">Fondo Panel Buses (Video)</button>
+            <input type="file" id="trackVideoInput" accept="video/*" style="display: none;" onchange="changeTrackVideo(event)">
+            <div class="input-container">
+                <label for="bodyOpacity">Transparencia Interfaz (0-1):</label>
+                <span class="refresh-icon" onclick="resetBodyOpacity()">🔄</span>
+                <input type="range" id="bodyOpacity" min="0" max="1" step="0.1" value="0.8" oninput="changeBodyOpacity(this.value)">
+            </div>
+            <div class="input-container">
+                <label for="trackOpacity">Transparencia Panel Buses (0-1):</label>
+                <span class="refresh-icon" onclick="resetTrackOpacity()">🔄</span>
+                <input type="range" id="trackOpacity" min="0" max="1" step="0.1" value="0.8" oninput="changeTrackOpacity(this.value)">
+            </div>
+            <div class="input-container">
+                <label for="busSize">Tamaño de los Autobuses (px):</label>
+                <span class="refresh-icon" onclick="resetBusSize()">🔄</span>
+                <input type="range" id="busSize" min="40" max="120" step="5" value="80" oninput="changeBusSize(this.value)">
+            </div>
+            <div class="input-container">
+                <label for="busPosition">Posición Vertical Autobuses (px):</label>
+                <span class="refresh-icon" onclick="resetBusPosition()">🔄</span>
+                <input type="range" id="busPosition" min="-20" max="50" step="5" value="0" oninput="changeBusPosition(this.value)">
+            </div>
+            <div class="input-container">
+                <label for="starSize">Tamaño de las Estrellas (px):</label>
+                <span class="refresh-icon" onclick="resetStarSize()">🔄</span>
+                <input type="range" id="starSize" min="10" max="50" step="2" value="28" oninput="changeStarSize(this.value)">
+            </div>
+            <button onclick="changeBackground('linear-gradient(to bottom, #FF9999, #FFCCCC)')">Fondo Rojo</button>
+            <button onclick="changeBackground('linear-gradient(to bottom, #99FF99, #CCFFCC)')">Fondo Verde</button>
+            <button onclick="resetOriginalBackground()">Fondo Original</button>
+            <button onclick="changeTitle()">Cambiar Título Principal</button>
+            <button onclick="changeInstructionTitle()">Cambiar Título de Instrucción</button>
+            <button onclick="changeLineSpeed()">Cambiar Velocidad de Líneas</button>
+            <button onclick="changeBusNames()">Cambiar Nombres de Autobuses</button>
+            <button onclick="showStyleForm()">Cambiar Color y Tamaño</button>
+            <button onclick="showStarDistanceForm()">Distancia de Estrellas</button>
+            <button onclick="showGoalForm()">Cambiar Meta de Regalos</button>
+            <button onclick="showBusForm()">Cambiar Autobuses</button>
+            <button onclick="showStarForm()">Cambiar Estrellas</button>
+            <button onclick="showLastWinnerForm()">Cambiar Último Ganador</button>
+
+            <form id="busForm">
+                <label>Cambiar todos los autobuses (Imagen/Video):</label>
+                <input type="file" id="busAllInput" accept="image/*,video/*" onchange="applyBusAll(event)">
+                <label>Bus 1:</label>
+                <input type="file" id="bus1Input" accept="image/*,video/*" onchange="applyBusIndividual(event, 1)">
+                <label>Bus 2:</label>
+                <input type="file" id="bus2Input" accept="image/*,video/*" onchange="applyBusIndividual(event, 2)">
+                <label>Bus 3:</label>
+                <input type="file" id="bus3Input" accept="image/*,video/*" onchange="applyBusIndividual(event, 3)">
+                <label>Bus 4:</label>
+                <input type="file" id="bus4Input" accept="image/*,video/*" onchange="applyBusIndividual(event, 4)">
+                <label>Bus 5:</label>
+                <input type="file" id="bus5Input" accept="image/*,video/*" onchange="applyBusIndividual(event, 5)">
+            </form>
+
+            <form id="starForm">
+                <label>Cambiar todas las estrellas (Imagen/Video):</label>
+                <input type="file" id="starAllInput" accept="image/*,video/*" onchange="applyStarAll(event)">
+                <label>Estrella 1:</label>
+                <input type="file" id="star1Input" accept="image/*,video/*" onchange="applyStarIndividual(event, 1)">
+                <label>Estrella 2:</label>
+                <input type="file" id="star2Input" accept="image/*,video/*" onchange="applyStarIndividual(event, 2)">
+                <label>Estrella 3:</label>
+                <input type="file" id="star3Input" accept="image/*,video/*" onchange="applyStarIndividual(event, 3)">
+                <label>Estrella 4:</label>
+                <input type="file" id="star4Input" accept="image/*,video/*" onchange="applyStarIndividual(event, 4)">
+                <label>Estrella 5:</label>
+                <input type="file" id="star5Input" accept="image/*,video/*" onchange="applyStarIndividual(event, 5)">
+            </form>
+
+            <form id="styleForm">
+                <label>Color de los nombres:</label>
+                <div class="input-container">
+                    <span class="refresh-icon" onclick="resetBusNameColor()">🔄</span>
+                    <input type="color" id="busNameColorInput" value="#ffffff">
+                </div>
+                <label>Tamaño de las letras (px):</label>
+                <div class="input-container">
+                    <span class="refresh-icon" onclick="resetBusNameSize()">🔄</span>
+                    <input type="number" id="busNameSizeInput" min="1" value="20">
+                </div>
+                <button type="button" onclick="applyBusStyle()">Aplicar</button>
+            </form>
+
+            <form id="starDistanceForm">
+                <label>Distancia para todas (px):</label>
+                <div class="input-container">
+                    <span class="refresh-icon" onclick="resetStarDistanceAll()">🔄</span>
+                    <input type="number" id="starDistanceAll" min="50" value="90">
+                </div>
+                <button type="button" onclick="applyStarDistanceAll()">Aplicar a Todas</button>
+                <label>Distancia Bus 1 (px):</label>
+                <div class="input-container">
+                    <span class="refresh-icon" onclick="resetStarDistance(1)">🔄</span>
+                    <input type="number" id="starDistance1" min="50" value="90">
+                </div>
+                <label>Distancia Bus 2 (px):</label>
+                <div class="input-container">
+                    <span class="refresh-icon" onclick="resetStarDistance(2)">🔄</span>
+                    <input type="number" id="starDistance2" min="50" value="90">
+                </div>
+                <label>Distancia Bus 3 (px):</label>
+                <div class="input-container">
+                    <span class="refresh-icon" onclick="resetStarDistance(3)">🔄</span>
+                    <input type="number" id="starDistance3" min="50" value="90">
+                </div>
+                <label>Distancia Bus 4 (px):</label>
+                <div class="input-container">
+                    <span class="refresh-icon" onclick="resetStarDistance(4)">🔄</span>
+                    <input type="number" id="starDistance4" min="50" value="90">
+                </div>
+                <label>Distancia Bus 5 (px):</label>
+                <div class="input-container">
+                    <span class="refresh-icon" onclick="resetStarDistance(5)">🔄</span>
+                    <input type="number" id="starDistance5" min="50" value="90">
+                </div>
+                <button type="button" onclick="applyStarDistances()">Aplicar Individual</button>
+            </form>
+
+            <form id="goalForm">
+                <label>Meta de Regalos:</label>
+                <div class="input-container">
+                    <span class="refresh-icon" onclick="resetGiftGoal()">🔄</span>
+                    <input type="number" id="giftGoalInput" min="1" value="100">
+                </div>
+                <button type="button" onclick="applyGiftGoal()">Aplicar</button>
+            </form>
+
+            <form id="lastWinnerForm">
+                <label>Último Ganador:</label>
+                <div class="input-container">
+                    <span class="refresh-icon" onclick="resetLastWinner()">🔄</span>
+                    <input type="text" id="lastWinnerInput" value="Ninguno">
+                </div>
+                <button type="button" onclick="applyLastWinner()">Aplicar</button>
+            </form>
+        </div>
+        <div>
+            <h1 id="mainTitle">Carrera de Autobuses de tu Ciudad</h1>
+            <h3 id="instructionTitle">Toca la Pista para Hacer Avanzar a tu Autobús</h3>
+            <p>Último Ganador: <span id="last-winner">Ninguno</span> <span class="refresh-icon" onclick="resetOnlyLastWinner()">🔄</span></p>
+        </div>
+
+        <div class="track">
+            <video id="trackVideo" autoplay loop muted style="display: none;"></video>
+            <div class="goal-container">
+                <span id="giftGoalText">Meta de Regalos 100</span>
+                <span class="flag">🏁</span>
+            </div>
+            <div class="winner-message" id="winnerMessage">¡Felicidades!</div>
+            <div class="lane" id="lane1" ontouchstart="addGift(1)" onclick="addGift(1)">
+                <div class="bus-container">
+                    <img class="bus pre-race" id="bus1" src="https://thumbs4.imagebam.com/1f/b0/28/ME10CY0R_t.png" alt="Autobús">
+                    <span class="bus-name pre-race" id="busName1">México</span>
+                    <div class="star-container pre-race" id="starContainer1">
+                        <img class="star" id="star1" src="" alt="Estrella" style="display: none;">
+                        <span class="star" id="starText1">🌟</span>
+                        <span class="gift-count" id="giftCount1">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lane" id="lane2" ontouchstart="addGift(2)" onclick="addGift(2)">
+                <div class="bus-container">
+                    <img class="bus pre-race" id="bus2" src="https://thumbs4.imagebam.com/1f/b0/28/ME10CY0R_t.png" alt="Autobús">
+                    <span class="bus-name pre-race" id="busName2">Guadalajara</span>
+                    <div class="star-container pre-race" id="starContainer2">
+                        <img class="star" id="star2" src="" alt="Estrella" style="display: none;">
+                        <span class="star" id="starText2">🌟</span>
+                        <span class="gift-count" id="giftCount2">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lane" id="lane3" ontouchstart="addGift(3)" onclick="addGift(3)">
+                <div class="bus-container">
+                    <img class="bus pre-race" id="bus3" src="https://thumbs4.imagebam.com/1f/b0/28/ME10CY0R_t.png" alt="Autobús">
+                    <span class="bus-name pre-race" id="busName3">Monterrey</span>
+                    <div class="star-container pre-race" id="starContainer3">
+                        <img class="star" id="star3" src="" alt="Estrella" style="display: none;">
+                        <span class="star" id="starText3">🌟</span>
+                        <span class="gift-count" id="giftCount3">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lane" id="lane4" ontouchstart="addGift(4)" onclick="addGift(4)">
+                <div class="bus-container">
+                    <img class="bus pre-race" id="bus4" src="https://thumbs4.imagebam.com/1f/b0/28/ME10CY0R_t.png" alt="Autobús">
+                    <span class="bus-name pre-race" id="busName4">Puebla</span>
+                    <div class="star-container pre-race" id="starContainer4">
+                        <img class="star" id="star4" src="" alt="Estrella" style="display: none;">
+                        <span class="star" id="starText4">🌟</span>
+                        <span class="gift-count" id="giftCount4">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lane" id="lane5" ontouchstart="addGift(5)" onclick="addGift(5)">
+                <div class="bus-container">
+                    <img class="bus pre-race" id="bus5" src="https://thumbs4.imagebam.com/1f/b0/28/ME10CY0R_t.png" alt="Autobús">
+                    <span class="bus-name pre-race" id="busName5">Querétaro</span>
+                    <div class="star-container pre-race" id="starContainer5">
+                        <img class="star" id="star5" src="" alt="Estrella" style="display: none;">
+                        <span class="star" id="starText5">🌟</span>
+                        <span class="gift-count" id="giftCount5">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Tiempo de Carrera: <span id="timer">00:00</span></p>
+            <p id="error">¡Todo listo! Toca una pista para comenzar.</p>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let scores = [0, 0, 0, 0, 0];
+        let positions = [0, 0, 0, 0, 0];
+        let raceTime = 0;
+        let timerInterval = null;
+        let raceStarted = false;
+        let maxPosition = window.innerWidth - 80;
+        let busNames = ["México", "Guadalajara", "Monterrey", "Puebla", "Querétaro"];
+        let starDistances = [90, 90, 90, 90, 90];
+        const GIFT_DISTANCE = 20;
+        let giftGoal = 100;
+        let preRaceIntervals = [];
+        let lastClickTime = 0;
+        const CLICK_DELAY = 200;
+        let isDarkMode = false;
+        let lastWinner = "Ninguno";
+
+        const toggleIcon = document.getElementById("darkModeToggle");
+        const mainTitle = document.getElementById("mainTitle");
+        const instructionTitle = document.getElementById("instructionTitle");
+        const dynamicStyle = document.getElementById("dynamicLineSpeed");
+        const dynamicBusStyle = document.getElementById("dynamicBusStyle");
+        const dynamicStarStyle = document.getElementById("dynamicStarStyle");
+
+        // Configuración inicial de valores por defecto
+        let settings = {
+            isDarkMode: false,
+            mainTitle: "Carrera de Autobuses de tu Ciudad",
+            instructionTitle: "Toca la Pista para Hacer Avanzar a tu Autobús",
+            lineSpeed: "1",
+            busNames: ["México", "Guadalajara", "Monterrey", "Puebla", "Querétaro"],
+            busNameColor: "#ffffff",
+            busNameSize: "20",
+            starDistances: [90, 90, 90, 90, 90],
+            bodyOpacity: "0.8",
+            trackOpacity: "0.8",
+            busSize: "80",
+            busPosition: "0",
+            starSize: "28",
+            giftGoal: 100,
+            lastWinner: "Ninguno"
+        };
+
+        // IndexedDB Setup
+        let db;
+        const request = indexedDB.open("BusRaceDB", 1);
+
+        request.onerror = function(event) {
+            console.error("Error al abrir IndexedDB:", event.target.errorCode);
+        };
+
+        request.onsuccess = function(event) {
+            db = event.target.result;
+            applySavedSettings();
+            updatePositions();
+            startPreRaceAnimation();
+        };
+
+        request.onupgradeneeded = function(event) {
+            db = event.target.result;
+            const objectStore = db.createObjectStore("settings", { keyPath: "key" });
+            objectStore.createIndex("key", "key", { unique: true });
+        };
+
+        // Funciones para IndexedDB
+        function saveToIndexedDB(key, value) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(["settings"], "readwrite");
+                const store = transaction.objectStore("settings");
+                const request = store.put({ key: key, value: value });
+
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function getFromIndexedDB(key) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(["settings"], "readonly");
+                const store = transaction.objectStore("settings");
+                const request = store.get(key);
+
+                request.onsuccess = () => resolve(request.result ? request.result.value : null);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function deleteFromIndexedDB(key) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(["settings"], "readwrite");
+                const store = transaction.objectStore("settings");
+                const request = store.delete(key);
+
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function applySavedSettings() {
+            try {
+                // Cargar configuraciones desde IndexedDB
+                isDarkMode = (await getFromIndexedDB("isDarkMode")) || false;
+                settings.mainTitle = (await getFromIndexedDB("mainTitle")) || settings.mainTitle;
+                settings.instructionTitle = (await getFromIndexedDB("instructionTitle")) || settings.instructionTitle;
+                settings.lineSpeed = (await getFromIndexedDB("lineSpeed")) || settings.lineSpeed;
+                settings.busNames = (await getFromIndexedDB("busNames")) || settings.busNames;
+                busNames = settings.busNames;
+                settings.busNameColor = (await getFromIndexedDB("busNameColor")) || settings.busNameColor;
+                settings.busNameSize = (await getFromIndexedDB("busNameSize")) || settings.busNameSize;
+                settings.starDistances = (await getFromIndexedDB("starDistances")) || settings.starDistances;
+                starDistances = settings.starDistances;
+                settings.bodyOpacity = (await getFromIndexedDB("bodyOpacity")) || settings.bodyOpacity;
+                settings.trackOpacity = (await getFromIndexedDB("trackOpacity")) || settings.trackOpacity;
+                settings.busSize = (await getFromIndexedDB("busSize")) || settings.busSize;
+                settings.busPosition = (await getFromIndexedDB("busPosition")) || settings.busPosition;
+                settings.starSize = (await getFromIndexedDB("starSize")) || settings.starSize;
+                giftGoal = (await getFromIndexedDB("giftGoal")) || settings.giftGoal;
+                lastWinner = (await getFromIndexedDB("lastWinner")) || settings.lastWinner;
+
+                // Aplicar modo oscuro
+                if (isDarkMode) {
+                    document.body.classList.add("dark-mode");
+                    toggleIcon.innerText = "☀️";
+                } else {
+                    toggleIcon.innerText = "🌙";
+                }
+
+                // Cargar fondos del cuerpo (interfaz)
+                const savedBodyImage = await getFromIndexedDB("bodyImage");
+                const savedBodyVideo = await getFromIndexedDB("bodyVideo");
+                const savedBackground = await getFromIndexedDB("background");
+
+                if (savedBodyImage) {
+                    document.body.style.background = `url(${savedBodyImage})`;
+                    document.body.style.backgroundSize = "cover";
+                    document.body.style.backgroundPosition = "center";
+                    document.getElementById("backgroundVideo").style.display = "none";
+                } else if (savedBodyVideo) {
+                    const video = document.getElementById("backgroundVideo");
+                    video.src = savedBodyVideo;
+                    video.style.display = "block";
+                    video.onerror = () => {
+                        console.warn("Error al cargar el video de fondo del cuerpo.");
+                        resetOriginalBackground();
+                    };
+                    document.body.style.background = "none";
+                } else if (savedBackground) {
+                    document.body.style.background = savedBackground;
+                    document.body.style.backgroundSize = "cover";
+                    document.body.style.backgroundPosition = "center";
+                    document.getElementById("backgroundVideo").style.display = "none";
+                } else {
+                    document.body.style.background = isDarkMode 
+                        ? "linear-gradient(to bottom, #1a1a1a, #333)" 
+                        : "linear-gradient(to bottom, #87CEEB, #E0F6FF)";
+                }
+
+                // Aplicar opacidad del cuerpo
+                document.querySelector(".game-container").style.background = isDarkMode 
+                    ? `rgba(0, 0, 0, ${settings.bodyOpacity})` 
+                    : `rgba(255, 255, 255, ${settings.bodyOpacity})`;
+
+                // Cargar fondos del panel de buses
+                const savedTrackImage = await getFromIndexedDB("trackImage");
+                const savedTrackVideo = await getFromIndexedDB("trackVideo");
+
+                if (savedTrackImage) {
+                    document.querySelector(".track").style.background = `url(${savedTrackImage})`;
+                    document.querySelector(".track").style.backgroundSize = "cover";
+                    document.querySelector(".track").style.backgroundPosition = "center";
+                    document.getElementById("trackVideo").style.display = "none";
+                } else if (savedTrackVideo) {
+                    const video = document.getElementById("trackVideo");
+                    video.src = savedTrackVideo;
+                    video.style.display = "block";
+                    video.onerror = () => {
+                        console.warn("Error al cargar el video del panel de buses.");
+                        document.querySelector(".track").style.background = isDarkMode 
+                            ? `rgba(26, 26, 26, ${settings.trackOpacity})` 
+                            : `rgba(51, 51, 51, ${settings.trackOpacity})`;
+                        video.style.display = "none";
+                    };
+                    document.querySelector(".track").style.background = "none";
+                } else {
+                    document.querySelector(".track").style.background = isDarkMode 
+                        ? `rgba(26, 26, 26, ${settings.trackOpacity})` 
+                        : `rgba(51, 51, 51, ${settings.trackOpacity})`;
+                }
+
+                // Aplicar imágenes de los buses y nombres
+                for (let i = 1; i <= 5; i++) {
+                    const savedBus = await getFromIndexedDB(`bus${i}`);
+                    const bus = document.getElementById(`bus${i}`);
+                    if (savedBus) {
+                        bus.src = savedBus;
+                        bus.onerror = () => {
+                            bus.src = "https://thumbs4.imagebam.com/1f/b0/28/ME10CY0R_t.png";
+                            console.warn(`Error al cargar la imagen del bus ${i}.`);
+                        };
+                    }
+                    document.getElementById(`busName${i}`).textContent = busNames[i - 1];
+                    document.getElementById(`starContainer${i}`).style.left = starDistances[i - 1] + "px";
+                    document.getElementById(`starDistance${i}`).value = starDistances[i - 1];
+                    bus.style.width = `${settings.busSize}px`;
+                    bus.style.bottom = `${settings.busPosition}px`;
+                }
+
+                // Aplicar imágenes de las estrellas
+                for (let i = 1; i <= 5; i++) {
+                    const savedStar = await getFromIndexedDB(`star${i}`);
+                    if (savedStar) {
+                        const starImg = document.getElementById(`star${i}`);
+                        starImg.src = savedStar;
+                        starImg.style.display = "block";
+                        starImg.onerror = () => {
+                            starImg.style.display = "none";
+                            document.getElementById(`starText${i}`).style.display = "block";
+                            console.warn(`Error al cargar la imagen de la estrella ${i}.`);
+                        };
+                        document.getElementById(`starText${i}`).style.display = "none";
+                    }
+                }
+
+                // Aplicar configuraciones de UI
+                document.getElementById("bodyOpacity").value = settings.bodyOpacity;
+                document.getElementById("trackOpacity").value = settings.trackOpacity;
+                document.getElementById("busSize").value = settings.busSize;
+                document.getElementById("busPosition").value = settings.busPosition;
+                document.getElementById("starSize").value = settings.starSize;
+                mainTitle.innerText = settings.mainTitle;
+                instructionTitle.innerText = settings.instructionTitle;
+                dynamicStyle.textContent = `.lane::after { animation: moveLines ${settings.lineSpeed}s linear infinite; }`;
+                dynamicBusStyle.textContent = `.bus-name { color: ${settings.busNameColor} !important; font-size: ${settings.busNameSize}px !important; }`;
+                dynamicStarStyle.textContent = `.star { font-size: ${settings.starSize}px; width: ${settings.starSize}px; height: ${settings.starSize}px; }`;
+                document.getElementById("giftGoalText").textContent = `Meta de Regalos ${giftGoal}`;
+                document.getElementById("giftGoalInput").value = giftGoal;
+                document.getElementById("last-winner").textContent = lastWinner;
+                document.getElementById("lastWinnerInput").value = lastWinner;
+            } catch (error) {
+                console.error("Error al aplicar configuraciones desde IndexedDB:", error);
+            }
+        }
+
+        let resizeTimeout;
+        window.addEventListener("resize", () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                maxPosition = window.innerWidth - parseInt(document.getElementById("busSize").value);
+                updatePositions();
+            }, 100);
+        });
+
+        function startPreRaceAnimation() {
+            for (let i = 1; i <= 5; i++) {
+                const bus = document.getElementById(`bus${i}`);
+                const busName = document.getElementById(`busName${i}`);
+                const starContainer = document.getElementById(`starContainer${i}`);
+                
+                let tempPosition = 0;
+                
+                preRaceIntervals[i-1] = setInterval(() => {
+                    if (!raceStarted) {
+                        const move = Math.random() < 0.5 ? -10 : 10;
+                        tempPosition = Math.max(0, Math.min(50, tempPosition + move));
+                        
+                        bus.style.left = tempPosition + "px";
+                        busName.style.left = tempPosition + "px";
+                        starContainer.style.left = (tempPosition + starDistances[i - 1]) + "px";
+                    }
+                }, 500 + Math.random() * 1000);
+            }
+        }
+
+        function updatePositions() {
+            for (let i = 1; i <= 5; i++) {
+                const bus = document.getElementById(`bus${i}`);
+                const busName = document.getElementById(`busName${i}`);
+                const starContainer = document.getElementById(`starContainer${i}`);
+                
+                if (raceStarted) {
+                    bus.style.transition = "left 0.5s ease";
+                    busName.style.transition = "left 0.5s ease";
+                    starContainer.style.transition = "left 0.5s ease";
+                    
+                    bus.style.left = positions[i - 1] + "px";
+                    busName.style.left = positions[i - 1] + "px";
+                    starContainer.style.left = (positions[i - 1] + starDistances[i - 1]) + "px";
+                    
+                    bus.classList.remove("pre-race");
+                    busName.classList.remove("pre-race");
+                    starContainer.classList.remove("pre-race");
+                } else {
+                    starContainer.style.left = starDistances[i - 1] + "px";
+                }
+            }
+        }
+
+        function resetAllPositions() {
+            const maxScore = Math.max(...scores);
+            if (maxScore === 0) return;
+
+            const leaderPosition = positions[scores.indexOf(maxScore)];
+            const scale = leaderPosition === 0 ? 1 : (maxPosition - Math.max(...starDistances)) / leaderPosition;
+            for (let i = 0; i < 5; i++) {
+                positions[i] = Math.min(positions[i] * scale, maxPosition - starDistances[i]);
+                if (positions[i] < 0) positions[i] = 0;
+            }
+            updatePositions();
+        }
+
+        function addGift(busId) {
+            const currentTime = Date.now();
+            if (currentTime - lastClickTime < CLICK_DELAY) {
+                return;
+            }
+            lastClickTime = currentTime;
+
+            if (!raceStarted) {
+                startRace();
+            }
+            if (scores[busId - 1] < giftGoal) {
+                scores[busId - 1]++;
+                positions[busId - 1] += GIFT_DISTANCE;
+                document.getElementById(`giftCount${busId}`).innerText = scores[busId - 1];
+            }
+
+            const leaderPosition = Math.max(...positions) + Math.max(...starDistances);
+            if (leaderPosition >= maxPosition) {
+                resetAllPositions();
+            } else {
+                updatePositions();
+            }
+
+            if (scores[busId - 1] >= giftGoal) {
+                endRace(busId);
+            }
+        }
+
+        function startRace() {
+            raceStarted = true;
+            preRaceIntervals.forEach(interval => clearInterval(interval));
+            preRaceIntervals = [];
+            document.getElementById("error").innerText = "¡Carrera en curso!";
+            document.getElementById("error").style.color = isDarkMode ? "#FF69B4" : "#FF1493";
+            timerInterval = setInterval(() => {
+                raceTime++;
+                let minutes = Math.floor(raceTime / 60).toString().padStart(2, "0");
+                let seconds = (raceTime % 60).toString().padStart(2, "0");
+                document.getElementById("timer").innerText = `${minutes}:${seconds}`;
+            }, 1000);
+            updatePositions();
+        }
+
+        async function endRace(winnerId) {
+            clearInterval(timerInterval);
+            raceStarted = false;
+            const winnerName = busNames[winnerId - 1];
+            lastWinner = winnerName;
+            document.getElementById("last-winner").textContent = winnerName;
+            await saveToIndexedDB("lastWinner", winnerName);
+
+            const winnerMessage = document.getElementById("winnerMessage");
+            winnerMessage.innerText = `¡${winnerName} ha ganado! 🎉`;
+            winnerMessage.style.display = "block";
+
+            setTimeout(() => {
+                winnerMessage.style.display = "none";
+                resetRace();
+            }, 3000);
+
+            document.getElementById("error").innerText = `¡${winnerName} ha ganado!`;
+            document.getElementById("error").style.color = isDarkMode ? "#FF69B4" : "#FF1493";
+        }
+
+        function resetRace() {
+            scores = [0, 0, 0, 0, 0];
+            positions = [0, 0, 0, 0, 0];
+            raceTime = 0;
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`giftCount${i}`).innerText = "0";
+            }
+            updatePositions();
+            document.getElementById("timer").innerText = "00:00";
+            document.getElementById("error").innerText = "¡Todo listo! Toca una pista para comenzar.";
+            document.getElementById("error").style.color = isDarkMode ? "#FF69B4" : "#FF1493";
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`bus${i}`).classList.add("pre-race");
+                document.getElementById(`busName${i}`).classList.add("pre-race");
+                document.getElementById(`starContainer${i}`).classList.add("pre-race");
+            }
+            startPreRaceAnimation();
+        }
+
+        function toggleSettings() {
+            const menu = document.getElementById("settingsMenu");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+            if (menu.style.display === "block") {
+                document.getElementById("styleForm").style.display = "none";
+                document.getElementById("starDistanceForm").style.display = "none";
+                document.getElementById("goalForm").style.display = "none";
+                document.getElementById("busForm").style.display = "none";
+                document.getElementById("starForm").style.display = "none";
+                document.getElementById("lastWinnerForm").style.display = "none";
+            }
+        }
+
+        async function refreshInterface() {
+            scores = [0, 0, 0, 0, 0];
+            positions = [0, 0, 0, 0, 0];
+            raceTime = 0;
+            clearInterval(timerInterval);
+            raceStarted = false;
+            preRaceIntervals.forEach(interval => clearInterval(interval));
+            preRaceIntervals = [];
+
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`giftCount${i}`).innerText = "0";
+                document.getElementById(`bus${i}`).classList.add("pre-race");
+                document.getElementById(`busName${i}`).classList.add("pre-race");
+                document.getElementById(`starContainer${i}`).classList.add("pre-race");
+            }
+
+            document.getElementById("timer").innerText = "00:00";
+            document.getElementById("last-winner").textContent = lastWinner;
+            document.getElementById("error").innerText = "¡Todo listo! Toca una pista para comenzar.";
+            document.getElementById("error").style.color = isDarkMode ? "#FF69B4" : "#FF1493";
+
+            updatePositions();
+            startPreRaceAnimation();
+        }
+
+        async function changeBackground(bgStyle) {
+            document.body.style.background = bgStyle;
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center";
+            document.getElementById("backgroundVideo").style.display = "none";
+            await saveToIndexedDB("background", bgStyle);
+            await deleteFromIndexedDB("bodyImage");
+            await deleteFromIndexedDB("bodyVideo");
+            toggleSettings();
+        }
+
+        async function resetOriginalBackground() {
+            document.body.style.background = isDarkMode 
+                ? "linear-gradient(to bottom, #1a1a1a, #333)" 
+                : "linear-gradient(to bottom, #87CEEB, #E0F6FF)";
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center";
+            document.querySelector(".track").style.background = isDarkMode 
+                ? `rgba(26, 26, 26, ${settings.trackOpacity})` 
+                : `rgba(51, 51, 51, ${settings.trackOpacity})`;
+            document.querySelector(".track").style.backgroundSize = "cover";
+            document.querySelector(".track").style.backgroundPosition = "center";
+            document.getElementById("backgroundVideo").style.display = "none";
+            document.getElementById("trackVideo").style.display = "none";
+            await deleteFromIndexedDB("bodyImage");
+            await deleteFromIndexedDB("bodyVideo");
+            await deleteFromIndexedDB("trackImage");
+            await deleteFromIndexedDB("trackVideo");
+            await deleteFromIndexedDB("background");
+            toggleSettings();
+        }
+
+        async function changeBodyImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    document.body.style.background = `url(${e.target.result})`;
+                    document.body.style.backgroundSize = "cover";
+                    document.body.style.backgroundPosition = "center";
+                    await saveToIndexedDB("bodyImage", e.target.result);
+                    await deleteFromIndexedDB("bodyVideo");
+                    await deleteFromIndexedDB("background");
+                    document.getElementById("backgroundVideo").style.display = "none";
+                    toggleSettings();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function changeBodyVideo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const video = document.getElementById("backgroundVideo");
+                    video.src = e.target.result;
+                    video.style.display = "block";
+                    video.onerror = () => {
+                        console.warn("Error al cargar el video de fondo del cuerpo.");
+                        resetOriginalBackground();
+                    };
+                    document.body.style.background = "none";
+                    await saveToIndexedDB("bodyVideo", e.target.result);
+                    await deleteFromIndexedDB("bodyImage");
+                    await deleteFromIndexedDB("background");
+                    toggleSettings();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function changeTrackImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    document.querySelector(".track").style.background = `url(${e.target.result})`;
+                    document.querySelector(".track").style.backgroundSize = "cover";
+                    document.querySelector(".track").style.backgroundPosition = "center";
+                    await saveToIndexedDB("trackImage", e.target.result);
+                    await deleteFromIndexedDB("trackVideo");
+                    document.getElementById("trackVideo").style.display = "none";
+                    toggleSettings();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function changeTrackVideo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const video = document.getElementById("trackVideo");
+                    video.src = e.target.result;
+                    video.style.display = "block";
+                    video.onerror = () => {
+                        console.warn("Error al cargar el video del panel de buses.");
+                        document.querySelector(".track").style.background = isDarkMode 
+                            ? `rgba(26, 26, 26, ${settings.trackOpacity})` 
+                            : `rgba(51, 51, 51, ${settings.trackOpacity})`;
+                        video.style.display = "none";
+                    };
+                    document.querySelector(".track").style.background = "none";
+                    await saveToIndexedDB("trackVideo", e.target.result);
+                    await deleteFromIndexedDB("trackImage");
+                    toggleSettings();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function changeBodyOpacity(value) {
+            const gameContainer = document.querySelector(".game-container");
+            gameContainer.style.background = isDarkMode 
+                ? `rgba(0, 0, 0, ${value})` 
+                : `rgba(255, 255, 255, ${value})`;
+            settings.bodyOpacity = value;
+            await saveToIndexedDB("bodyOpacity", value);
+        }
+
+        async function resetBodyOpacity() {
+            document.getElementById("bodyOpacity").value = "0.8";
+            await changeBodyOpacity("0.8");
+        }
+
+        async function changeTrackOpacity(value) {
+            const track = document.querySelector(".track");
+            track.style.background = isDarkMode 
+                ? `rgba(26, 26, 26, ${value})` 
+                : `rgba(51, 51, 51, ${value})`;
+            if (await getFromIndexedDB("trackImage")) {
+                track.style.background = `url(${await getFromIndexedDB("trackImage")})`;
+                track.style.backgroundSize = "cover";
+                track.style.backgroundPosition = "center";
+                track.style.opacity = value;
+            } else if (await getFromIndexedDB("trackVideo")) {
+                document.getElementById("trackVideo").style.opacity = value;
+            }
+            settings.trackOpacity = value;
+            await saveToIndexedDB("trackOpacity", value);
+        }
+
+        async function resetTrackOpacity() {
+            document.getElementById("trackOpacity").value = "0.8";
+            await changeTrackOpacity("0.8");
+        }
+
+        async function changeBusSize(value) {
+            for (let i = 1; i <= 5; i++) {
+                const bus = document.getElementById(`bus${i}`);
+                bus.style.width = `${value}px`;
+            }
+            settings.busSize = value;
+            await saveToIndexedDB("busSize", value);
+            maxPosition = window.innerWidth - parseInt(value);
+            updatePositions();
+        }
+
+        async function resetBusSize() {
+            document.getElementById("busSize").value = "80";
+            await changeBusSize("80");
+        }
+
+        async function changeBusPosition(value) {
+            for (let i = 1; i <= 5; i++) {
+                const bus = document.getElementById(`bus${i}`);
+                bus.style.bottom = `${value}px`;
+            }
+            settings.busPosition = value;
+            await saveToIndexedDB("busPosition", value);
+        }
+
+        async function resetBusPosition() {
+            document.getElementById("busPosition").value = "0";
+            await changeBusPosition("0");
+        }
+
+        async function changeStarSize(value) {
+            dynamicStarStyle.textContent = `
+                .star { font-size: ${value}px; width: ${value}px; height: ${value}px; }
+            `;
+            settings.starSize = value;
+            await saveToIndexedDB("starSize", value);
+        }
+
+        async function resetStarSize() {
+            document.getElementById("starSize").value = "28";
+            await changeStarSize("28");
+        }
+
+        async function changeTitle() {
+            const newTitle = prompt("Introduce el nuevo título principal:");
+            if (newTitle) {
+                mainTitle.innerText = newTitle;
+                settings.mainTitle = newTitle;
+                await saveToIndexedDB("mainTitle", newTitle);
+                toggleSettings();
+            }
+        }
+
+        async function changeInstructionTitle() {
+            const newInstructionTitle = prompt("Introduce el nuevo título de instrucción:", instructionTitle.innerText);
+            if (newInstructionTitle) {
+                instructionTitle.innerText = newInstructionTitle;
+                settings.instructionTitle = newInstructionTitle;
+                await saveToIndexedDB("instructionTitle", newInstructionTitle);
+                toggleSettings();
+            }
+        }
+
+        async function changeLineSpeed() {
+            const newSpeed = prompt("Introduce la velocidad de las líneas en segundos (ejemplo: 1, 2, 3):");
+            if (newSpeed && !isNaN(newSpeed) && newSpeed > 0) {
+                dynamicStyle.textContent = `.lane::after { animation: moveLines ${newSpeed}s linear infinite; }`;
+                settings.lineSpeed = newSpeed;
+                await saveToIndexedDB("lineSpeed", newSpeed);
+                toggleSettings();
+            } else {
+                alert("Por favor, introduce un número válido mayor a 0.");
+            }
+        }
+
+        async function changeBusNames() {
+            const oldNames = [...busNames];
+            for (let i = 1; i <= 5; i++) {
+                const newName = prompt(`Introduce el nombre para el autobús ${i} (actual: ${busNames[i - 1]}):`);
+                if (newName) {
+                    busNames[i - 1] = newName;
+                    document.getElementById(`busName${i}`).textContent = newName;
+                }
+            }
+            settings.busNames = busNames;
+            await saveToIndexedDB("busNames", busNames);
+
+            // Actualizar lastWinner si coincide con un nombre antiguo
+            if (oldNames.includes(lastWinner)) {
+                const index = oldNames.indexOf(lastWinner);
+                if (busNames[index] !== lastWinner) {
+                    lastWinner = busNames[index];
+                    document.getElementById("last-winner").textContent = lastWinner;
+                    document.getElementById("lastWinnerInput").value = lastWinner;
+                    await saveToIndexedDB("lastWinner", lastWinner);
+                }
+            }
+            toggleSettings();
+        }
+
+        function showStyleForm() {
+            const form = document.getElementById("styleForm");
+            form.style.display = form.style.display === "block" ? "none" : "block";
+            document.getElementById("starDistanceForm").style.display = "none";
+            document.getElementById("goalForm").style.display = "none";
+            document.getElementById("busForm").style.display = "none";
+            document.getElementById("starForm").style.display = "none";
+            document.getElementById("lastWinnerForm").style.display = "none";
+        }
+
+        function showStarDistanceForm() {
+            const form = document.getElementById("starDistanceForm");
+            form.style.display = form.style.display === "block" ? "none" : "block";
+            document.getElementById("styleForm").style.display = "none";
+            document.getElementById("goalForm").style.display = "none";
+            document.getElementById("busForm").style.display = "none";
+            document.getElementById("starForm").style.display = "none";
+            document.getElementById("lastWinnerForm").style.display = "none";
+        }
+
+        function showGoalForm() {
+            const form = document.getElementById("goalForm");
+            form.style.display = form.style.display === "block" ? "none" : "block";
+            document.getElementById("styleForm").style.display = "none";
+            document.getElementById("starDistanceForm").style.display = "none";
+            document.getElementById("busForm").style.display = "none";
+            document.getElementById("starForm").style.display = "none";
+            document.getElementById("lastWinnerForm").style.display = "none";
+        }
+
+        function showBusForm() {
+            const form = document.getElementById("busForm");
+            form.style.display = form.style.display === "block" ? "none" : "block";
+            document.getElementById("styleForm").style.display = "none";
+            document.getElementById("starDistanceForm").style.display = "none";
+            document.getElementById("goalForm").style.display = "none";
+            document.getElementById("starForm").style.display = "none";
+            document.getElementById("lastWinnerForm").style.display = "none";
+        }
+
+        function showStarForm() {
+            const form = document.getElementById("starForm");
+            form.style.display = form.style.display === "block" ? "none" : "block";
+            document.getElementById("styleForm").style.display = "none";
+            document.getElementById("starDistanceForm").style.display = "none";
+            document.getElementById("goalForm").style.display = "none";
+            document.getElementById("busForm").style.display = "none";
+            document.getElementById("lastWinnerForm").style.display = "none";
+        }
+
+        function showLastWinnerForm() {
+            const form = document.getElementById("lastWinnerForm");
+            form.style.display = form.style.display === "block" ? "none" : "block";
+            document.getElementById("styleForm").style.display = "none";
+            document.getElementById("starDistanceForm").style.display = "none";
+            document.getElementById("goalForm").style.display = "none";
+            document.getElementById("busForm").style.display = "none";
+            document.getElementById("starForm").style.display = "none";
+        }
+
+        async function applyBusAll(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const newSrc = e.target.result;
+                    for (let i = 1; i <= 5; i++) {
+                        const bus = document.getElementById(`bus${i}`);
+                        bus.src = newSrc;
+                        bus.onerror = () => {
+                            bus.src = "https://thumbs4.imagebam.com/1f/b0/28/ME10CY0R_t.png";
+                            console.warn(`Error al cargar la imagen del bus ${i}.`);
+                        };
+                        await saveToIndexedDB(`bus${i}`, newSrc);
+                    }
+                    toggleSettings();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function applyBusIndividual(event, busId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const bus = document.getElementById(`bus${busId}`);
+                    bus.src = e.target.result;
+                    bus.onerror = () => {
+                        bus.src = "https://thumbs4.imagebam.com/1f/b0/28/ME10CY0R_t.png";
+                        console.warn(`Error al cargar la imagen del bus ${busId}.`);
+                    };
+                    await saveToIndexedDB(`bus${busId}`, e.target.result);
+                    toggleSettings();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function applyStarAll(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    for (let i = 1; i <= 5; i++) {
+                        const starImg = document.getElementById(`star${i}`);
+                        starImg.src = e.target.result;
+                        starImg.style.display = "block";
+                        document.getElementById(`starText${i}`).style.display = "none";
+                        await saveToIndexedDB(`star${i}`, e.target.result);
+                    }
+                    toggleSettings();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function applyStarIndividual(event, starId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const starImg = document.getElementById(`star${starId}`);
+                    starImg.src = e.target.result;
+                    starImg.style.display = "block";
+                    document.getElementById(`starText${starId}`).style.display = "none";
+                    await saveToIndexedDB(`star${starId}`, e.target.result);
+                    toggleSettings();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function applyBusStyle() {
+            const newColor = document.getElementById("busNameColorInput").value;
+            const newSize = document.getElementById("busNameSizeInput").value;
+            if (newSize > 0) {
+                dynamicBusStyle.textContent = `
+                    .bus-name { color: ${newColor} !important; font-size: ${newSize}px !important; }
+                `;
+                settings.busNameColor = newColor;
+                settings.busNameSize = newSize;
+                await saveToIndexedDB("busNameColor", newColor);
+                await saveToIndexedDB("busNameSize", newSize);
+                toggleSettings();
+            } else {
+                alert("Por favor, introduce un tamaño numérico mayor a 0.");
+            }
+        }
+
+        async function resetBusNameColor() {
+            document.getElementById("busNameColorInput").value = "#ffffff";
+            await applyBusStyle();
+        }
+
+        async function resetBusNameSize() {
+            document.getElementById("busNameSizeInput").value = "20";
+            await applyBusStyle();
+        }
+
+        async function applyStarDistances() {
+            let allValid = true;
+            for (let i = 1; i <= 5; i++) {
+                const newDistance = parseInt(document.getElementById(`starDistance${i}`).value);
+                if (newDistance >= 50) {
+                    starDistances[i - 1] = newDistance;
+                    document.getElementById(`starContainer${i}`).style.left = starDistances[i - 1] + "px";
+                } else {
+                    alert(`La distancia para el Bus ${i} debe ser al menos 50px.`);
+                    allValid = false;
+                    break;
+                }
+            }
+            if (allValid) {
+                settings.starDistances = [...starDistances];
+                await saveToIndexedDB("starDistances", settings.starDistances);
+                toggleSettings();
+                updatePositions();
+            }
+        }
+
+        async function applyStarDistanceAll() {
+            const newDistanceAll = parseInt(document.getElementById("starDistanceAll").value);
+            if (newDistanceAll >= 50) {
+                for (let i = 1; i <= 5; i++) {
+                    starDistances[i - 1] = newDistanceAll;
+                    document.getElementById(`starDistance${i}`).value = newDistanceAll;
+                    document.getElementById(`starContainer${i}`).style.left = starDistances[i - 1] + "px";
+                }
+                settings.starDistances = [...starDistances];
+                await saveToIndexedDB("starDistances", settings.starDistances);
+                toggleSettings();
+                updatePositions();
+            } else {
+                alert("La distancia para todas las estrellas debe ser al menos 50px.");
+            }
+        }
+
+        async function resetStarDistanceAll() {
+            document.getElementById("starDistanceAll").value = "90";
+            await applyStarDistanceAll();
+        }
+
+        async function resetStarDistance(index) {
+            document.getElementById(`starDistance${index}`).value = "90";
+            await applyStarDistances();
+        }
+
+        async function applyGiftGoal() {
+            const newGoal = parseInt(document.getElementById("giftGoalInput").value);
+            if (newGoal > 0) {
+                giftGoal = newGoal;
+                document.getElementById("giftGoalText").textContent = `Meta de Regalos ${giftGoal}`;
+                await saveToIndexedDB("giftGoal", giftGoal);
+                toggleSettings();
+            } else {
+                alert("Por favor, introduce un número mayor a 0.");
+            }
+        }
+
+        async function resetGiftGoal() {
+            document.getElementById("giftGoalInput").value = "100";
+            await applyGiftGoal();
+        }
+
+        async function applyLastWinner() {
+            const newLastWinner = document.getElementById("lastWinnerInput").value;
+            if (newLastWinner) {
+                lastWinner = newLastWinner;
+                document.getElementById("last-winner").textContent = newLastWinner;
+                await saveToIndexedDB("lastWinner", newLastWinner);
+                toggleSettings();
+            } else {
+                alert("Por favor, introduce un nombre válido.");
+            }
+        }
+
+        async function resetLastWinner() {
+            document.getElementById("lastWinnerInput").value = "Ninguno";
+            await applyLastWinner();
+        }
+
+        async function resetOnlyLastWinner() {
+            lastWinner = "Ninguno";
+            document.getElementById("last-winner").textContent = lastWinner;
+            document.getElementById("lastWinnerInput").value = lastWinner;
+            await saveToIndexedDB("lastWinner", lastWinner);
+        }
+
+        async function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle("dark-mode");
+            toggleIcon.innerText = isDarkMode ? "☀️" : "🌙";
+            document.getElementById("error").style.color = isDarkMode ? "#FF69B4" : "#FF1493";
+            const bodyOpacity = document.getElementById("bodyOpacity").value;
+            const trackOpacity = document.getElementById("trackOpacity").value;
+            document.querySelector(".game-container").style.background = isDarkMode 
+                ? `rgba(0, 0, 0, ${bodyOpacity})` 
+                : `rgba(255, 255, 255, ${bodyOpacity})`;
+            document.querySelector(".track").style.background = isDarkMode 
+                ? `rgba(26, 26, 26, ${trackOpacity})` 
+                : `rgba(51, 51, 51, ${trackOpacity})`;
+            dynamicBusStyle.textContent = `
+                .bus-name { color: ${settings.busNameColor} !important; font-size: ${settings.busNameSize}px !important; }
+            `;
+            await saveToIndexedDB("isDarkMode", isDarkMode);
+            applySavedSettings();
+        }
+    </script>
+</body>
+</html>
